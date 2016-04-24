@@ -10,9 +10,8 @@ var dt = 1;
 var g = 10;
 
 var gravity = 0.2;
-var friction = 0;
+var friction = 0.2;
 
-var a = 0;
 var t = 0;
 
 
@@ -30,8 +29,8 @@ function init() {
 		width : 25,
 		height : 25,
 		vx: 0,
-		speed: 0,
-		maxSpeed: 50,
+		a: 0,
+		speed: 50,
 		vy: 0,
 		jump: false,
 		move: 'right'
@@ -53,8 +52,7 @@ function init() {
 		keys[e.keyCode] = false;
 
 		if(!player.jump){
-			player.speed = 0;
-			a = 0;
+			player.a = 0;
 		}
 		
 	});
@@ -63,13 +61,6 @@ function init() {
 }
 
 function update() {
-	t++;
-
-	if(a < player.maxSpeed) {
-		a = Math.abs(player.vx / t) * 100; 
-	}
-
-
 	// skok
 	if (keys[38]) {
 		if(!player.jump) {
@@ -82,14 +73,16 @@ function update() {
 	// w prawo
 	if (keys[39]) {
 		if(!player.jump) {
-			// Vn+1 = Vn - g * dt
-			player.vx += g * dt + player.speed;
 			player.move = 'right';
 
+			// Vn+1 = Vn - g * dt
+			if(player.vx < player.speed) {
+				player.vx += g * dt + player.a;
+			}
+
 			//przyspieszenie liniowe
-			if(player.speed <= player.maxSpeed) {
-				player.speed ++;
-				console.log(g * dt + player.speed);
+			if(player.vx < player.speed) {
+				player.a += 0.5;
 			}
 		}
 	}
@@ -97,34 +90,44 @@ function update() {
 	// w lewo
 	if (keys[37]) {
 		if(!player.jump) {
-			// Vn+1 = Vn - g * dt
-			player.vx -= g * dt + player.speed;
 			player.move = 'left';
 
+			// Vn+1 = Vn - g * dt
+			if(player.vx > -player.speed) {
+				player.vx -= g * dt + player.a;
+			}
+
 			//przyspieszenie liniowe
-			if(player.speed < player.maxSpeed) {
-				player.speed ++;
+			if(player.vx > -player.speed) {
+				player.a += 0.5;
 			}
 		}
 	}
 
-		console.log(player.vx);
+		console.log(player.vx, player.a);
 
 	// grawitacja
 	if (player.jump) {
 		player.vy += gravity;
 
 		if(player.move == 'right') {
-				player.vx += g * dt + player.speed;
-			} else if (player.move == 'left') {
-				player.vx -= g * dt + player.speed;
+			if(player.vx < player.speed) {
+				player.vx += g * dt + player.a;
 			}
+		}
+
+		if (player.move == 'left') {
+			if(player.vx > -player.speed) {
+				player.vx -= g * dt + player.a;
+			}
+		}
 	} else {
 		player.vy = 0;
 	}
 
 	//tarcie
 	player.vx *= friction;
+
 
 
 	// Yn+1 = Yn + Vn * dt
@@ -140,6 +143,7 @@ function update() {
 	if (player.y >= canvas.height - player.height){
 		player.y = canvas.height - player.height;
 		player.jump = false;
+		player.vx = 0;
 	}
 
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
