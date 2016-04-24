@@ -10,9 +10,11 @@ var dt = 1;
 var g = 10;
 
 var gravity = 0.2;
-var friction = 0.2;
 
-var t = 0;
+var a = 0;
+
+var μ = -0.02;
+var m = 1;
 
 
 function init() {
@@ -29,7 +31,6 @@ function init() {
 		width : 25,
 		height : 25,
 		vx: 0,
-		a: 0,
 		speed: 50,
 		vy: 0,
 		jump: false,
@@ -52,7 +53,7 @@ function init() {
 		keys[e.keyCode] = false;
 
 		if(!player.jump){
-			player.a = 0;
+			a = 0;
 		}
 		
 	});
@@ -65,7 +66,7 @@ function update() {
 	if (keys[38]) {
 		if(!player.jump) {
 			player.jump = true;
-			// Vn+1 = Vn - g * dt
+			// prędkość w osi y: Vn+1 = Vn - g * dt
 			player.vy -= g * dt;
 		}
 	}
@@ -75,15 +76,18 @@ function update() {
 		if(!player.jump) {
 			player.move = 'right';
 
-			// Vn+1 = Vn - g * dt
+			// prędkość w osi x: Vn+1 = Vn - g * dt
 			if(player.vx < player.speed) {
-				player.vx += g * dt + player.a;
+				player.vx += g * dt + a;
 			}
 
 			//przyspieszenie liniowe
 			if(player.vx < player.speed) {
-				player.a += 0.5;
+				a += 0.5;
 			}
+
+			//tarcie: Ft = -μmq
+			player.vx *= -μ * m * g;
 		}
 	}
 
@@ -92,19 +96,20 @@ function update() {
 		if(!player.jump) {
 			player.move = 'left';
 
-			// Vn+1 = Vn - g * dt
+			// prędkość w osi x: Vn+1 = Vn - g * dt
 			if(player.vx > -player.speed) {
-				player.vx -= g * dt + player.a;
+				player.vx -= g * dt + a;
 			}
 
 			//przyspieszenie liniowe
 			if(player.vx > -player.speed) {
-				player.a += 0.5;
+				a += 0.5;
 			}
+
+			//tarcie: Ft = -μmq
+			player.vx *= -μ * m * g;
 		}
 	}
-
-		console.log(player.vx, player.a);
 
 	// grawitacja
 	if (player.jump) {
@@ -112,22 +117,22 @@ function update() {
 
 		if(player.move == 'right') {
 			if(player.vx < player.speed) {
-				player.vx += g * dt + player.a;
+				player.vx += g * dt + a;
+				//TODO: opór powietrza
+				player.vx *= 0.2;
 			}
 		}
 
 		if (player.move == 'left') {
 			if(player.vx > -player.speed) {
-				player.vx -= g * dt + player.a;
+				player.vx -= g * dt + a;
+				//TODO: opór powietrza
+				player.vx *= 0.2;
 			}
 		}
 	} else {
 		player.vy = 0;
 	}
-
-	//tarcie
-	player.vx *= friction;
-
 
 
 	// Yn+1 = Yn + Vn * dt
