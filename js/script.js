@@ -1,4 +1,10 @@
 function loop() {
+    player.drawPlayer();
+    board.drawTiles();
+
+    oldX = player.x;
+    oldY = player.y;
+
     // skok
     if (game.keys[38]) {
         if(!player.jump) {
@@ -72,9 +78,15 @@ function loop() {
         player.vy = 0;
     }
 
+    var newX = player.x + player.vx * game.dt
+    var newY = player.y + player.vy * game.dt;
+    game.collisionDetection(player, newX, newY);
+
     // Yn+1 = Yn + Vn * dt
-    player.x += player.vx * game.dt;
-    player.y += player.vy * game.dt;
+    if(!game.collision) {
+        player.x += player.vx * game.dt;
+        player.y += player.vy * game.dt;
+    }
 
     if (player.x >= canvas.width - player.width) {
         player.x = canvas.width - player.width;
@@ -87,12 +99,6 @@ function loop() {
         player.jump = false;
         player.vx = 0;
     }
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = player.fill;
-    ctx.fillRect(player.x, player.y, player.width, player.height);
-
-    //drawTiles(tile);
 
     fps(loop);
 };
