@@ -9,10 +9,12 @@ var player = {
     vy: 0,
     jump: false,
     move: 'right',
-    fill: '#F7AAAA',
+    img: 'img/bear.png',
     drawPlayer: function() {
+        var img = new Image;
+        img.src = player.img;
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = player.fill;
-        ctx.fillRect(player.x, player.y, player.width, player.height);
+        ctx.drawImage(img, player.x, player.y, player.width, player.height);
     }
 }

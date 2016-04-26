@@ -3,11 +3,33 @@ body {
 }
 
 #canvas { 
-	background: #fff;
-	border: 1px solid #000;
+	background: url('../img/background.png') no-repeat center center;
+	background-size: cover;
 	width: 1200px;
 	height: 600px;
 	position: absolute;
 	left: calc(50% - 1200px / 2);
 	top: calc(50% - 600px / 2);
+}
+
+#gameover {
+	background: url('../img/background.png') no-repeat center center;
+	background-size: cover;
+	width: 1200px;
+	height: 600px;
+	position: absolute;
+	left: calc(50% - 1200px / 2);
+	top: calc(50% - 600px / 2);
+}
+
+#gameover h2 {
+	position: absolute;
+	left: 0;
+	top: 150px;
+	width: 100%;
+	font-family: Consolas;
+	font-size: 100px;
+	color: #FF0068;
+	text-align: center;
+
 }
